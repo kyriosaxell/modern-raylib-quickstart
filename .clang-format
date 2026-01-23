@@ -5,6 +5,7 @@ BasedOnStyle: LLVM
 # C++ moderno
 Standard: Latest
 
+IndentCaseLabels: true
 AlignConsecutiveAssignments: false
 AlignConsecutiveDeclarations: false
 AlignConsecutiveShortCaseStatements:
@@ -42,9 +43,12 @@ BraceWrapping:
 BreakBeforeBraces: Custom
 BreakConstructorInitializers: AfterColon
 BreakConstructorInitializersBeforeComma: false
+# Alinea el parentesis de cierre con la línea del inicio
+AlignAfterOpenBracket: BlockIndent
+
 ColumnLimit: 120
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
-ContinuationIndentWidth: 4
+#ContinuationIndentWidth: 4
 IncludeCategories:
   - Regex: '^<.*'
     Priority: 1

@@ -1,36 +1,34 @@
+#include "game.hpp"
 #include "raylib.h"
 
 #include "resource_dir.h"
+#include "telemetry.hpp"
 
 int main() {
 	// Tell the window to use vsync and work on high DPI displays
 	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
-	SetTargetFPS(60);
+	SetTargetFPS(120);
 
 	// Create the window and OpenGL context
 	InitWindow(1280, 800, "Hello Raylib");
 
 	// Utility function from resource_dir.h to find the resources folder and set it as the current working directory so we can load from it
 	SearchAndSetResourceDir("resources");
+	Game game;
 
-	// Load a texture from the resources directory
-	const Texture wabbit = LoadTexture("wabbit_alpha.png");
 
 	// Game loop
 	while (!WindowShouldClose()) {
-		BeginDrawing();
+		game.HandleInput();
+		game.Update();
 
+		BeginDrawing();
 		ClearBackground(BLACK);
 
-		DrawText("Hello Raylib", 200, 200, 20,WHITE);
-
-		DrawTexture(wabbit, 400, 200, WHITE);
-
+		game.Draw();
+		Telemetry::DrawPerformanceOverlay();
 		EndDrawing();
 	}
-
-	// A must!
-	UnloadTexture(wabbit);
 
 	CloseWindow();
 	return 0;
