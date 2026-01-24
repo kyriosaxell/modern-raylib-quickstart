@@ -22,3 +22,7 @@ void Laser::Update() {
 void Laser::Draw() const {
   DrawRectangle(static_cast<int>(m_Position.x), static_cast<int>(m_Position.y), 4, 15, {243, 216, 63, 255});
 }
+
+Rectangle Laser::GetRect() const {
+	return {m_Position.x, m_Position.y, 4,15};
+}

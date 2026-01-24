@@ -5,9 +5,13 @@
 #include "block.hpp"
 
 Block::Block(const Vector2 position) {
-	this->position = position;
+	this->m_Position = position;
 }
 
 void Block::Draw() const {
-	DrawRectangle(position.x, position.y, 3, 3,YELLOW);
+	DrawRectangle(m_Position.x, m_Position.y, 3, 3,YELLOW);
+}
+
+Rectangle Block::GetRect() const {
+	return {m_Position.x, m_Position.y, 3, 3};
 }

@@ -3,7 +3,6 @@
 //
 
 #include "alien.hpp"
-
 #include <iostream>
 
 Texture2D Alien::s_AlienImages[3] = {};
@@ -40,9 +39,14 @@ int Alien::GetType() const {
 	return type;
 }
 
-void Alien::UnloadImages() {
+void Alien::s_UnloadImages() {
 	for (int i = 0; i < 4; i++) {
 		std::cout << "Unloading imagen! " << i << std::endl;
 		UnloadTexture(s_AlienImages[i]);
 	}
+}
+
+Rectangle Alien::GetRect() const {
+	return {position.x, position.y, static_cast<float>(s_AlienImages[type - 1].width),
+			static_cast<float>(s_AlienImages[type - 1].height)};
 }

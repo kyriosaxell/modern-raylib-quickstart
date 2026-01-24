@@ -6,8 +6,11 @@ BasedOnStyle: LLVM
 Standard: Latest
 
 IndentCaseLabels: true
-AlignConsecutiveAssignments: false
-AlignConsecutiveDeclarations: false
+AlignConsecutiveAssignments:
+  Enabled: true
+  AcrossEmptyLines: true
+  AcrossComments: false
+AlignConsecutiveDeclarations: true
 AlignConsecutiveShortCaseStatements:
   Enabled: true
   AcrossEmptyLines: true
@@ -72,3 +75,4 @@ SpacesInParentheses: false
 TabWidth: 4
 IndentWidth: 4
 UseTab: Always
+

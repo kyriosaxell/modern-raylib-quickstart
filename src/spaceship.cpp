@@ -8,7 +8,7 @@ Spaceship::Spaceship() {
 	image = LoadTexture("spaceship.png");
 	position.x = static_cast<float>(GetScreenWidth() - image.width) / 2;
 	position.y = static_cast<float>(GetScreenHeight() - image.height);
-	lastFireTime = 0.0;
+	m_LastFireTime = 0.0;
 }
 
 Spaceship::~Spaceship() {
@@ -34,8 +34,12 @@ void Spaceship::MoveRight() {
 }
 
 void Spaceship::FireLaser() {
-	if (GetTime() - lastFireTime >= 0.25) {
+	if (GetTime() - m_LastFireTime >= 0.25) {
 		lasers.push_back(Laser{{position.x + static_cast<float>(image.width) / 2 - 2, position.y}, -laser_speed});
-		lastFireTime = GetTime();
+		m_LastFireTime = GetTime();
 	}
+}
+
+Rectangle Spaceship::GetRect() const {
+	return {position.x, position.y, static_cast<float>(image.width), static_cast<float>(image.height)};
 }

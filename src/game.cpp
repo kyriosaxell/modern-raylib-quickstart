@@ -10,13 +10,21 @@ Game::Game() {
 	m_Obstacles = m_CreateObstacles();
 	m_Aliens = s_CreateAliens();
 	m_AliensDirections = 1;
+	m_TimeLastAlienFired = 0.0;
+	m_MysteryShipSpawnInterval = static_cast<float>(GetRandomValue(10, 20));
 }
 
 Game::~Game() {
-	Alien::UnloadImages();
+	Alien::s_UnloadImages();
 }
 
 void Game::Update() {
+	if (const double currentTime = GetTime(); currentTime - m_MysteryTimeLastSpawn > m_MysteryShipSpawnInterval) {
+		m_MysteryShip.Spawn();
+		m_MysteryTimeLastSpawn = static_cast<float>(GetTime());
+		m_MysteryShipSpawnInterval = static_cast<float>(GetRandomValue(10, 20));
+	}
+
 	for (auto& laser : m_Spaceship.lasers) {
 		laser.Update();
 	}
@@ -29,6 +37,9 @@ void Game::Update() {
 	}
 
 	DeleteInactiveLasers();
+	m_MysteryShip.Update();
+
+	CheckForCollisions();
 }
 
 void Game::Draw() const {
@@ -53,6 +64,7 @@ void Game::Draw() const {
 	for (auto& laser : m_AlienLasers) {
 		laser.Draw();
 	}
+	m_MysteryShip.Draw();
 }
 
 void Game::HandleInput() {
@@ -65,6 +77,14 @@ void Game::DeleteInactiveLasers() {
 	for (auto it = m_Spaceship.lasers.begin(); it != m_Spaceship.lasers.end();) {
 		if (!it->active) {
 			it = m_Spaceship.lasers.erase(it);
+		} else {
+			++it;
+		}
+	}
+
+	for (auto it = m_AlienLasers.begin(); it != m_AlienLasers.end();) {
+		if (!it->active) {
+			it = m_AlienLasers.erase(it);
 		} else {
 			++it;
 		}
@@ -122,12 +142,50 @@ void Game::m_MoveDownAliens(const float distance) {
 }
 
 void Game::m_AlienShootLaser() {
-	const int randomIndex = GetRandomValue(0, static_cast<int>(m_Aliens.size()) - 1);
-	const Alien& alien = m_Aliens[randomIndex];
-	const auto& img = Alien::s_AlienImages[alien.type - 1];
-	m_AlienLasers.push_back(Laser{
-			{alien.position.x + static_cast<float>(img.width) / 2.0f,
-			 alien.position.y + static_cast<float>(img.height)},
-			6}
-	);
+	if (const double currentTime = GetTime(); currentTime - m_TimeLastAlienFired > s_AlienLaserShootInterval && !
+		m_Aliens.empty()) {
+		const int    randomIndex = GetRandomValue(0, static_cast<int>(m_Aliens.size()) - 1);
+		const Alien& alien = m_Aliens[randomIndex];
+		const auto&  img = Alien::s_AlienImages[alien.type - 1];
+		m_AlienLasers.push_back(Laser{
+				{alien.position.x + static_cast<float>(img.width) / 2.0f,
+				 alien.position.y + static_cast<float>(img.height)},
+				6}
+		);
+		m_TimeLastAlienFired = static_cast<float>(GetTime());
+	}
+}
+
+void Game::CheckForCollisions() {
+	/// Checks collisions from Spaceship laser
+	for (auto& laser : m_Spaceship.lasers) {
+		// Checks for collisions with aliens
+		auto it = m_Aliens.begin();
+		while (it != m_Aliens.end()) {
+			if (CheckCollisionRecs(it->GetRect(), laser.GetRect())) {
+				it = m_Aliens.erase(it);
+				laser.active = false;
+			} else {
+				++it; // Moves to the next alien
+			}
+		}
+
+		// Checks for collisions with obstacles
+		for (auto& obstacle : m_Obstacles) {
+			auto node = obstacle.blocks.begin();
+			while (node != obstacle.blocks.end()) {
+				if (CheckCollisionRecs(node->GetRect(), laser.GetRect())) {
+					node = obstacle.blocks.erase(node);
+					laser.active = false;
+				} else {
+					++node;
+				}
+			}
+		}
+
+		if (CheckCollisionRecs(m_MysteryShip.GetRect(), laser.GetRect())) {
+			m_MysteryShip.is_alive = false;
+			laser.active = false;
+		}
+	}
 }

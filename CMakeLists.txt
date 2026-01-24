@@ -20,6 +20,8 @@ add_executable(SpaceInvaders
 	src/alien.hpp
 	src/telemetry.cpp
 	src/telemetry.hpp
+	src/mysteryship.cpp
+	src/mysteryship.hpp
 )
 
 target_include_directories(SpaceInvaders PRIVATE
