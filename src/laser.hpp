@@ -4,12 +4,12 @@
 class Laser {
 	public:
 		Laser(Vector2 position, float speed);
-		void Update();
-		void Draw() const;
-		bool active;
+		void	  Update();
+		void	  Draw() const;
+		bool	  active;
 		Rectangle GetRect() const;
 
 	private:
 		Vector2 m_Position{};
-		float m_Speed;
+		float	m_Speed;
 };

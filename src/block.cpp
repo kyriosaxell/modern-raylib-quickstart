@@ -9,7 +9,7 @@ Block::Block(const Vector2 position) {
 }
 
 void Block::Draw() const {
-	DrawRectangle(m_Position.x, m_Position.y, 3, 3,YELLOW);
+	DrawRectangle(m_Position.x, m_Position.y, 3, 3, YELLOW);
 }
 
 Rectangle Block::GetRect() const {

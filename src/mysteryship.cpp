@@ -5,7 +5,7 @@
 #include "mysteryship.hpp"
 
 Mysteryship::Mysteryship() {
-	m_Image = LoadTexture("mystery.png");
+	m_Image	 = LoadTexture("mystery.png");
 	is_alive = false;
 }
 
@@ -22,7 +22,7 @@ void Mysteryship::Draw() const {
 void Mysteryship::Update() {
 	if (is_alive) {
 		m_Position.x += static_cast<float>(m_Speed);
-		if (m_Position.x > static_cast<float>(GetScreenWidth() - m_Image.width) || m_Position.x < 0) {
+		if (m_Position.x > static_cast<float>(GetScreenWidth() - m_Image.width - 30) || m_Position.x < 30) {
 			is_alive = false;
 		}
 	}
@@ -31,13 +31,17 @@ void Mysteryship::Update() {
 void Mysteryship::Spawn() {
 	m_Position.y = 30;
 	if (const int side = GetRandomValue(0, 1); side == 0) {
-		m_Position.x = 0;
-		m_Speed = 3;
+		m_Position.x = 25;
+		m_Speed		 = 3;
 	} else {
-		m_Position.x = static_cast<float>(GetScreenWidth() - m_Image.width);
-		m_Speed = -3;
+		m_Position.x = static_cast<float>(GetScreenWidth() - m_Image.width) - 30;
+		m_Speed		 = -3;
 	}
 	is_alive = true;
+}
+
+void Mysteryship::Reset() {
+	is_alive = false;
 }
 
 Rectangle Mysteryship::GetRect() const {

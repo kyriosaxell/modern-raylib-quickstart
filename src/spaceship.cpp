@@ -3,43 +3,52 @@
 //
 
 #include "spaceship.hpp"
+#include <raylib.h>
 
 Spaceship::Spaceship() {
-	image = LoadTexture("spaceship.png");
-	position.x = static_cast<float>(GetScreenWidth() - image.width) / 2;
-	position.y = static_cast<float>(GetScreenHeight() - image.height);
+	m_Image		   = LoadTexture("spaceship.png");
+	m_Position.x   = static_cast<float>(GetScreenWidth() - m_Image.width) / 2;
+	m_Position.y   = static_cast<float>(GetScreenHeight() - m_Image.height) - 110;
 	m_LastFireTime = 0.0;
 }
 
 Spaceship::~Spaceship() {
-	UnloadTexture(image);
+	UnloadTexture(m_Image);
 }
 
 void Spaceship::Draw() const {
-	DrawTextureV(image, position, WHITE);
+	DrawTextureV(m_Image, m_Position, WHITE);
 }
 
 void Spaceship::MoveLeft() {
-	if (position.x <= -1) {
-		return;
+	m_Position.x += -s_SpaceShipSpeed;
+	if (m_Position.x < 40) {
+		m_Position.x = 40;
 	}
-	position.x += -spaceship_speed;
 }
 
 void Spaceship::MoveRight() {
-	if (position.x >= static_cast<float>(GetScreenWidth() - image.width)) {
-		return;
+	m_Position.x += s_SpaceShipSpeed;
+	if (m_Position.x > static_cast<float>(GetScreenWidth() - m_Image.width)) {
+		m_Position.x = static_cast<float>(GetScreenWidth() - m_Image.width) - 20;
 	}
-	position.x += spaceship_speed;
 }
 
 void Spaceship::FireLaser() {
-	if (GetTime() - m_LastFireTime >= 0.25) {
-		lasers.push_back(Laser{{position.x + static_cast<float>(image.width) / 2 - 2, position.y}, -laser_speed});
+	if (GetTime() - m_LastFireTime >= s_LastFireTimeInterval) {
+		lasers.push_back(
+			Laser{{m_Position.x + static_cast<float>(m_Image.width) / 2 - 2, m_Position.y}, -s_LaserSpeed}
+		);
 		m_LastFireTime = GetTime();
 	}
 }
 
 Rectangle Spaceship::GetRect() const {
-	return {position.x, position.y, static_cast<float>(image.width), static_cast<float>(image.height)};
+	return {m_Position.x, m_Position.y, static_cast<float>(m_Image.width), static_cast<float>(m_Image.height)};
+}
+
+void Spaceship::Reset() {
+	m_Position.x = static_cast<float>(GetScreenWidth() - m_Image.width) / 2.0f;
+	m_Position.y = static_cast<float>(GetScreenHeight() - m_Image.height) - 100;
+	lasers.clear();
 }
