@@ -35,10 +35,6 @@ void Alien::Update(const int direction) {
 	position.x += static_cast<float>(direction);
 }
 
-int Alien::GetType() const {
-	return type;
-}
-
 void Alien::s_UnloadImages() {
 	for (int i = 0; i < 3; i++) {
 		std::cout << "Unloading imagen! " << i << std::endl;

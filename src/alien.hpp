@@ -7,7 +7,6 @@ class Alien {
 		Alien(int type, Vector2 position);
 		void					Draw() const;
 		void					Update(int direction);
-		[[nodiscard]] int		GetType() const;
 		static void				s_UnloadImages();
 		static Texture2D		s_AlienImages[3];
 		[[nodiscard]] Rectangle GetRect() const;

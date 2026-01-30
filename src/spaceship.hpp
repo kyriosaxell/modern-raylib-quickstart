@@ -25,6 +25,7 @@ class Spaceship {
 		static constexpr float s_SpaceShipSpeed		  = 5.0f;
 		static constexpr float s_LaserSpeed			  = 7.0f;
 		static constexpr float s_LastFireTimeInterval = 0.25f;
+		Sound m_LaserSound{};
 };
 
 #endif

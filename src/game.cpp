@@ -4,11 +4,21 @@
 
 #include "game.hpp"
 
+#include <fstream>
+#include <iostream>
+
 Game::Game() {
+	music			 = LoadMusicStream("sound/music.ogg");
+	m_ExplosionSound = LoadSound("sound/explosion.ogg");
+
+	//SetMusicVolume(music, 0.5);
+	PlayMusicStream(music);
 	InitGame();
 }
 
 Game::~Game() {
+	UnloadMusicStream(music);
+	UnloadSound(m_ExplosionSound);
 	Alien::s_UnloadImages();
 }
 
@@ -74,6 +84,13 @@ void Game::HandleInput() {
 		if (IsKeyDown(KEY_RIGHT)) m_Spaceship.MoveRight();
 		if (IsKeyDown(KEY_LEFT)) m_Spaceship.MoveLeft();
 		if (IsKeyPressed(KEY_SPACE)) m_Spaceship.FireLaser();
+	}
+}
+
+void Game::CheckForHighScore() {
+	if (score > highScore) {
+		highScore = score;
+		s_SaveHighScoreToFile(highScore);
 	}
 }
 
@@ -170,6 +187,17 @@ void Game::CheckForCollisions() {
 		auto it = m_Aliens.begin();
 		while (it != m_Aliens.end()) {
 			if (CheckCollisionRecs(it->GetRect(), laser.GetRect())) {
+
+				PlaySound(m_ExplosionSound);
+				// Increments the score when a collision occurs
+				if (it->type == 1) {
+					score += 100;
+				} else if (it->type == 2) {
+					score += 200;
+				} else if (it->type) {
+					score += 300;
+				}
+
 				it			 = m_Aliens.erase(it);
 				laser.active = false;
 			} else {
@@ -191,8 +219,10 @@ void Game::CheckForCollisions() {
 		}
 
 		if (CheckCollisionRecs(m_MysteryShip.GetRect(), laser.GetRect())) {
+			score += 500;
 			m_MysteryShip.is_alive = false;
 			laser.active		   = false;
+			CheckForHighScore();
 		}
 	}
 
@@ -215,9 +245,8 @@ void Game::CheckForCollisions() {
 		// Check for collisions to Spaceship
 		if (CheckCollisionRecs(alien_laser.GetRect(), m_Spaceship.GetRect())) {
 			alien_laser.active = false;
-			if (m_SpaceShipLives > 1) {
-				--m_SpaceShipLives;
-			} else {
+			--m_SpaceShipLives;
+			if (m_SpaceShipLives == 0) {
 				m_GameOver();
 			}
 		}
@@ -238,6 +267,7 @@ void Game::CheckForCollisions() {
 }
 
 void Game::m_GameOver() {
+	CheckForHighScore();
 	run = false;
 }
 
@@ -257,4 +287,25 @@ void Game::InitGame() {
 	m_MysteryShipSpawnInterval = static_cast<float>(GetRandomValue(10, 20));
 	m_SpaceShipLives		   = 3;
 	run						   = true;
+	score					   = 0;
+	highScore				   = s_LoadHighScoreFromFile();
+}
+void Game::s_SaveHighScoreToFile(const int score) {
+	if (std::ofstream highScoreFile("highscore.txt"); highScoreFile.is_open()) {
+		highScoreFile << score;
+		highScoreFile.close();
+	} else {
+		std::cerr << "Failed to save highscore to file" << std::endl;
+	}
+}
+
+int Game::s_LoadHighScoreFromFile() {
+	int loadedHighScore = 0;
+	if (std::ifstream highScoreFile("highscore.txt"); highScoreFile.is_open()) {
+		highScoreFile >> loadedHighScore;
+		highScoreFile.close();
+	} else {
+		std::cerr << "Failed to load highscore from file" << std::endl;
+	}
+	return loadedHighScore;
 }

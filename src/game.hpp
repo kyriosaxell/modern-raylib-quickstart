@@ -10,11 +10,16 @@ class Game {
 	public:
 		Game();
 		~Game();
-		void Draw() const;
-		void Update();
-		void HandleInput();
-		bool run{};
-		[[nodiscard]] int	 GetLives() const { return m_SpaceShipLives; };
+		void			  Draw() const;
+		void			  Update();
+		void			  HandleInput();
+		bool			  run{};
+		[[nodiscard]] int GetLives() const { return m_SpaceShipLives; };
+		int				  lives{};
+		int				  score{};
+		int				  highScore{};
+		void			  CheckForHighScore();
+		Music			  music{};
 
 	private:
 		void					  DeleteInactiveLasers();
@@ -27,6 +32,8 @@ class Game {
 		void					  m_GameOver();
 		void					  Reset();
 		void					  InitGame();
+		static void				  s_SaveHighScoreToFile(int score);
+		static int				  s_LoadHighScoreFromFile();
 		Spaceship				  m_Spaceship;
 		std::vector<Obstacle>	  m_Obstacles;
 		std::vector<Alien>		  m_Aliens;
@@ -39,6 +46,7 @@ class Game {
 		float					  m_MysteryShipSpawnInterval{};
 		float					  m_MysteryTimeLastSpawn{};
 		int						  m_SpaceShipLives{};
+		Sound					  m_ExplosionSound{};
 };
 
 #endif

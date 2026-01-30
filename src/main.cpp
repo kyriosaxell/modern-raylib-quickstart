@@ -1,11 +1,19 @@
 #include "game.hpp"
 #include "raylib.h"
+#include "string"
 
 #include "resource_dir.h"
 #include "telemetry.hpp"
 
 constexpr Color grey   = {29, 29, 27, 255};
 constexpr Color yellow = {243, 216, 63, 255};
+
+std::string FormatWithLeadingZeros(const int number, const int width) {
+	std::string numberText	 = std::to_string(number);
+	const int	leadingZeros = static_cast<int>(width - numberText.length());
+	numberText				 = std::string(leadingZeros, '0') + numberText;
+	return numberText;
+}
 
 int main() {
 	constexpr int offset		= 50;
@@ -25,12 +33,14 @@ int main() {
 
 	SearchAndSetResourceDir("resources");
 
+	InitAudioDevice();
 	const Font		font			 = LoadFontEx("font/monogram.ttf", 64, 0, 0);
 	const Texture2D space_ship_image = LoadTexture("spaceship.png");
-	Game game;
+	Game			game;
 
 	// Game loop
 	while (!WindowShouldClose()) {
+		UpdateMusicStream(game.music);
 		game.HandleInput();
 		game.Update();
 
@@ -52,6 +62,14 @@ int main() {
 			x += 50;
 		}
 
+		DrawTextEx(font, "SCORE", {60, 20}, 34, 2, yellow);
+		std::string numberText = FormatWithLeadingZeros(game.score, 5);
+		DrawTextEx(font, numberText.c_str(), {60, 50}, 34, 2, yellow);
+
+		DrawTextEx(font, "HIGH-SCORE", {570, 15}, 34, 2, yellow);
+		std::string highscoreText = FormatWithLeadingZeros(game.highScore, 5);
+		DrawTextEx(font, highscoreText.c_str(), {655, 40}, 34, 2, yellow);
+
 		game.Draw();
 		Telemetry::DrawPerformanceOverlay();
 		EndDrawing();
@@ -60,5 +78,6 @@ int main() {
 	UnloadTexture(space_ship_image);
 
 	CloseWindow();
+	CloseAudioDevice();
 	return 0;
 }

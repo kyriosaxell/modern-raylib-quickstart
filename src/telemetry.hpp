@@ -3,7 +3,6 @@
 //
 
 #pragma once
-#include <raylib.h>
 
 class Telemetry {
 	public:

@@ -4,6 +4,8 @@
 
 #include "telemetry.hpp"
 
+#include <raylib.h>
+
 void Telemetry::DrawPerformanceOverlay() {
 	const int fps = GetFPS();
 	const float frameTime = GetFrameTime() * 1000.0f; // Convertir a milisegundos (latencia)
